@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Bayrak Bilmece - 195 Ülke Bayrağı Tahmin Oyunu</title>
+    <meta name="description" content="195 ülke bayrağını tahmin et! Profesyonel bayrak bilmece oyunu.">
+    <meta name="keywords" content="bayrak bilmece, bayrak oyunu, bayrak tahmin">
+    <meta name="author" content="Arda Gökay">
+    
+    <link rel="preconnect" href="https://flagcdn.com">
+    <link rel="dns-prefetch" href="https://flagcdn.com">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="dark">
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="logo-header-center">
+        <h1>🌍 Bayrak Bilmece <span class="by-text-animated">by Arda Gökay</span></h1>
+    </div>
+
+    <button id="theme-toggle" class="theme-toggle" aria-label="Tema Değiştir">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <aside class="left-sidebar">
+        <div class="user-info-top">
+            <div class="user-avatar-small">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </div>
+            <div class="user-details">
+                <span id="user-name-left">Misafir</span>
+                <small id="user-score-left">0 Puan</small>
+            </div>
+            <button id="logout-btn-left" class="logout-icon-btn" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+
+        <nav class="main-nav">
+            <button class="nav-btn active" data-section="home">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Ana Sayfa</span>
+            </button>
+            <button class="nav-btn" data-section="leaderboard">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                    <path d="M4 22h16"></path>
+                    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                </svg>
+                <span>Liderlik</span>
+            </button>
+            <button class="nav-btn" data-section="stats">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                <span>İstatistikler</span>
+            </button>
+            <button class="nav-btn" data-section="about">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>Hakkımda</span>
+            </button>
+            <button class="nav-btn" data-section="contact">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <span>İletişim</span>
+            </button>
+        </nav>
+
+        <div class="adsense-left-bottom">
+            <div class="adsense-placeholder">
+                <p>AdSense Reklam</p>
+                <small>Sol Alt</small>
+            </div>
+        </div>
+    </aside>
+
+    <aside class="right-sidebar">
+        <div class="adsense-right-top">
+            <div class="adsense-placeholder">
+                <p>AdSense Reklam</p>
+                <small>Sağ Üst</small>
+            </div>
+        </div>
+        <div class="adsense-right-bottom">
+            <div class="adsense-placeholder">
+                <p>AdSense Reklam</p>
+                <small>Sağ Alt</small>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-container-center">
+        <div id="section-home" class="content-section active">
+            <div id="login-view" class="view active">
+                <div class="login-center">
+                    <div class="login-card-center">
+                        <div class="login-icon">🌍</div>
+                        <h1>Bayrak Bilmece</h1>
+                        <p>195 Ülke Bayrağını Tanıyor Musun?</p>
+                        <input type="text" id="username-input" placeholder="Kullanıcı adını gir..." maxlength="20" autocomplete="username">
+                        <button id="start-btn" class="primary-btn">
+                            <span>Oyuna Başla</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="modes-view" class="view">
+                <div class="modes-center">
+                    <h1 class="section-title">Oyun Modu Seç</h1>
+                    <div class="modes-grid-new">
+                        <div class="mode-card-new" data-mode="classic">
+                            <div class="mode-icon-new">🎯</div>
+                            <h3>Klasik Mod</h3>
+                            <p>10 soru ile bilgini test et</p>
+                        </div>
+                        <div class="mode-card-new" data-mode="timed">
+                            <div class="mode-icon-new">⏱️</div>
+                            <h3>Süre Yarışı</h3>
+                            <p>Her soru 10 saniye!</p>
+                        </div>
+                        <div class="mode-card-new" data-mode="endless">
+                            <div class="mode-icon-new">♾️</div>
+                            <h3>Sonsuz Mod</h3>
+                            <p>Hata yapana kadar devam!</p>
+                        </div>
+                        <div class="mode-card-new" data-mode="regions">
+                            <div class="mode-icon-new">🗺️</div>
+                            <h3>Bölge Modu</h3>
+                            <p>Kıtalara göre bayraklar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="difficulty-view" class="view">
+                <div class="difficulty-center">
+                    <button id="back-to-modes-btn" class="back-btn-top">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Geri
+                    </button>
+                    <h1 class="section-title">Zorluk Seviyesi Seç</h1>
+                    <div class="difficulty-grid-new">
+                        <div class="difficulty-card" data-diff="easy">
+                            <div class="diff-icon">😊</div>
+                            <h3>Kolay</h3>
+                            <p>Bilinen bayraklar</p>
+                        </div>
+                        <div class="difficulty-card" data-diff="medium">
+                            <div class="diff-icon">😐</div>
+                            <h3>Orta</h3>
+                            <p>Orta seviye bayraklar</p>
+                        </div>
+                        <div class="difficulty-card" data-diff="hard">
+                            <div class="diff-icon">😰</div>
+                            <h3>Zor</h3>
+                            <p>Zorlu bayraklar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="regions-view" class="view">
+                <div class="regions-center">
+                    <button id="back-to-modes-from-regions" class="back-btn-top">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Geri
+                    </button>
+                    <h1 class="section-title">Bölge Seç</h1>
+                    <div class="regions-grid-new">
+                        <div class="region-card" data-region="all">
+                            <div class="region-icon">🌍</div>
+                            <h3>Tüm Kıtalar</h3>
+                        </div>
+                        <div class="region-card" data-region="avrupa">
+                            <div class="region-icon">🇪🇺</div>
+                            <h3>Avrupa</h3>
+                        </div>
+                        <div class="region-card" data-region="asya">
+                            <div class="region-icon">🇨🇳</div>
+                            <h3>Asya</h3>
+                        </div>
+                        <div class="region-card" data-region="afrika">
+                            <div class="region-icon">🇿🇦</div>
+                            <h3>Afrika</h3>
+                        </div>
+                        <div class="region-card" data-region="kuzey-amerika">
+                            <div class="region-icon">🇺🇸</div>
+                            <h3>Kuzey Amerika</h3>
+                        </div>
+                        <div class="region-card" data-region="guney-amerika">
+                            <div class="region-icon">🇧🇷</div>
+                            <h3>Güney Amerika</h3>
+                        </div>
+                        <div class="region-card" data-region="okyanusya">
+                            <div class="region-icon">🇦🇺</div>
+                            <h3>Okyanusya</h3>
+                        </div>
+                        <div class="region-card" data-region="antarktika">
+                            <div class="region-icon">🇦🇶</div>
+                            <h3>Antarktika</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ready-view" class="view">
+                <div class="ready-center">
+                    <div class="ready-card">
+                        <h1>Hazır Mısın?</h1>
+                        <p id="ready-mode-text">Klasik Mod - Kolay</p>
+                        <button id="ready-yes-btn" class="primary-btn-lg">
+                            <span>Evet, Başla!</span>
+                        </button>
+                        <button id="ready-no-btn" class="secondary-btn-lg">
+                            <span>Geri Dön</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="game-view" class="view">
+                <div class="game-container-new">
+                    <div class="game-header-new">
+                        <button id="back-game-btn" class="icon-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                        </button>
+                        <div class="game-stats">
+                            <span id="question-counter">Soru 1/10</span>
+                            <span id="score-display">Skor: 0</span>
+                        </div>
+                    </div>
+
+                    <div id="timer-display" class="timer-display" style="display: none;">
+                        <svg class="timer-svg" viewBox="0 0 100 100">
+                            <circle class="timer-circle-bg" cx="50" cy="50" r="45"></circle>
+                            <circle class="timer-circle" cx="50" cy="50" r="45"></circle>
+                        </svg>
+                        <span id="timer-text" class="timer-text">10</span>
+                    </div>
+
+                    <div class="game-progress-bar">
+                        <div id="game-progress" class="game-progress-fill"></div>
+                    </div>
+
+                    <div class="question-card-new">
+                        <h2>Bu hangi ülkenin bayrağı?</h2>
+                        <div class="flag-display-new">
+                            <img id="game-flag" src="" alt="Bayrak">
+                        </div>
+                        <div id="options-grid" class="options-grid-new"></div>
+                    </div>
+
+                    <div id="feedback-box" class="feedback-box"></div>
+                </div>
+            </div>
+
+            <div id="result-view" class="view">
+                <div class="result-center">
+                    <h1 class="result-title">Oyun Bitti!</h1>
+                    
+                    <div class="result-circle">
+                        <svg class="circle-svg" viewBox="0 0 120 120">
+                            <circle class="circle-bg" cx="60" cy="60" r="54"></circle>
+                            <circle id="result-circle-prog" class="circle-progress" cx="60" cy="60" r="54"></circle>
+                        </svg>
+                        <div class="circle-content">
+                            <span id="result-percent" class="percent-text">0%</span>
+                            <span class="percent-label">Başarı</span>
+                        </div>
+                    </div>
+
+                    <div class="result-stats">
+                        <div class="result-stat">
+                            <span class="stat-icon">🏆</span>
+                            <span id="result-score" class="stat-val">0</span>
+                            <span class="stat-lbl">Skor</span>
+                        </div>
+                        <div class="result-stat">
+                            <span class="stat-icon">✅</span>
+                            <span id="result-correct" class="stat-val">0</span>
+                            <span class="stat-lbl">Doğru</span>
+                        </div>
+                        <div class="result-stat">
+                            <span class="stat-icon">❌</span>
+                            <span id="result-incorrect" class="stat-val">0</span>
+                            <span class="stat-lbl">Yanlış</span>
+                        </div>
+                    </div>
+
+                    <p id="result-message" class="result-message"></p>
+
+                    <div class="result-actions-new">
+                        <button id="play-again" class="primary-btn-lg">Tekrar Oyna</button>
+                        <button id="share-result" class="secondary-btn-lg">Paylaş</button>
+                        <button id="back-to-menu" class="secondary-btn-lg">Ana Menü</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-leaderboard" class="content-section">
+            <div class="section-wrapper">
+                <h1 class="section-title">🏆 Liderlik Tablosu</h1>
+                <div id="leaderboard-container" class="leaderboard-list"></div>
+            </div>
+        </div>
+
+        <div id="section-stats" class="content-section">
+            <div class="section-wrapper">
+                <h1 class="section-title">📊 İstatistiklerim</h1>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-icon">🎮</span>
+                        <span id="stat-total-games" class="stat-value">0</span>
+                        <span class="stat-label">Toplam Oyun</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">🏆</span>
+                        <span id="stat-total-points" class="stat-value">0</span>
+                        <span class="stat-label">Toplam Puan</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">✅</span>
+                        <span id="stat-correct" class="stat-value">0</span>
+                        <span class="stat-label">Doğru Cevap</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">📈</span>
+                        <span id="stat-success-rate" class="stat-value">0%</span>
+                        <span class="stat-label">Başarı Oranı</span>
+                    </div>
+                </div>
+                <div class="achievements-section">
+                    <h2>🏅 Başarılar</h2>
+                    <div id="achievements-container" class="achievements-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-about" class="content-section">
+            <div class="section-wrapper">
+                <h1 class="section-title">👨‍💻 Hakkımda</h1>
+                <div class="about-card">
+                    <h2>Arda Gökay</h2>
+                    <p>Adım Arda Gökay ve bu tarz aklıma gelen fikirleri hayata geçiriyorum. Sizin de aklınızda bir fikir varsa benimle iletişime geçebilirsiniz.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-contact" class="content-section">
+            <div class="section-wrapper">
+                <h1 class="section-title">📞 İletişim</h1>
+                <div class="contact-links">
+                    <a href="https://wa.me/905XXXXXXXXX" target="_blank" class="contact-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                        </svg>
+                        <span>WhatsApp</span>
+                    </a>
+                    <a href="https://github.com/yourusername" target="_blank" class="contact-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                        </svg>
+                        <span>GitHub</span>
+                    </a>
+                    <a href="https://instagram.com/yourusername" target="_blank" class="contact-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                        <span>Instagram</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="logout-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon">🚪</div>
+            <h2>Çıkış Yapmak İstiyor Musun?</h2>
+            <p>Oyun kayıtların güvende tutulacak!</p>
+            <div class="modal-actions">
+                <button id="confirm-logout" class="primary-btn">Evet, Çık</button>
+                <button id="cancel-logout" class="secondary-btn">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="back-game-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon">⚠️</div>
+            <h2>Oyundan Çıkmak İstiyor Musun?</h2>
+            <p>İlerleme kaydedilmeyecek!</p>
+            <div class="modal-actions">
+                <button id="continue-game" class="primary-btn">Devam Et</button>
+                <button id="quit-game" class="secondary-btn">Çık</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
